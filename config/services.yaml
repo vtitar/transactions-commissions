@@ -5,6 +5,37 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
 
+    transactions.file.path: ''
+
+    region-zone.eu.countries-list:
+        - 'AT'
+        - 'BE'
+        - 'BG'
+        - 'CY'
+        - 'CZ'
+        - 'DE'
+        - 'DK'
+        - 'EE'
+        - 'ES'
+        - 'FI'
+        - 'FR'
+        - 'GR'
+        - 'HR'
+        - 'HU'
+        - 'IE'
+        - 'IT'
+        - 'LT'
+        - 'LU'
+        - 'LV'
+        - 'MT'
+        - 'NL'
+        - 'PO'
+        - 'PT'
+        - 'RO'
+        - 'SE'
+        - 'SI'
+        - 'SK'
+
 services:
     # default configuration for services in *this* file
     _defaults:
