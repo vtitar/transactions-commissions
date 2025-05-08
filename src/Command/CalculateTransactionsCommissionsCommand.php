@@ -2,9 +2,12 @@
 
 namespace App\Command;
 
+use App\Service\FileDataTransformer\TransactionFileDataTransformer;
+use App\Service\FileReader\FileReaderInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -22,10 +25,23 @@ class CalculateTransactionsCommissionsCommand extends Command
      */
     private SymfonyStyle $io;
 
+    private string $filePath;
+
     public function __construct(
-        private readonly LoggerInterface $logger
+        private readonly FileReaderInterface            $fileReader,
+        private readonly TransactionFileDataTransformer $transactionFileDataTransformer,
+        private readonly LoggerInterface                $logger
     ) {
         parent::__construct();
+    }
+
+    protected function configure(): void
+    {
+        $this->addArgument(
+            'filepath',
+            InputArgument::REQUIRED,
+            'Path to the input file'
+        );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -39,17 +55,9 @@ class CalculateTransactionsCommissionsCommand extends Command
 
         $this->io->info("Started: $formatedDateTime");
 
-        try {
-            $this->process();
-        } catch (\Throwable $exception) {
-            //TODO: handle this correctly
-            $this->io->error($exception->getMessage());
+        $this->filePath = $input->getArgument('filepath');
 
-            $this->logger->critical('Command is failed', [
-                'exception' => $exception->getMessage(),
-                $exception
-            ]);
-        }
+        $this->process();
 
         $end = time();
         $duration = $end - $start;
@@ -61,12 +69,23 @@ class CalculateTransactionsCommissionsCommand extends Command
 
     private function process(): void
     {
-        //read file
+        try {
+            $this->calculateCommissions();
+        } catch (\Throwable $exception) {
+            //TODO: handle this correctly
+            $this->io->error($exception->getMessage());
 
-        //get binlist
+            $this->logger->critical('Command is failed', [
+                'exception' => $exception->getMessage(),
+                $exception
+            ]);
+        }
+    }
 
-        //get rate
-
-        //calculate commission
+    private function calculateCommissions(): void
+    {
+        foreach ($this->fileReader->readFile($this->filePath, $this->transactionFileDataTransformer) as $dto) {
+            $this->io->writeln("BIN: {$dto->bin}, Amount: {$dto->amount}, Currency: {$dto->currency}");
+        }
     }
 }
