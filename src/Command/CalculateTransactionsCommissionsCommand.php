@@ -2,7 +2,10 @@
 
 namespace App\Command;
 
-use App\Service\FileDataTransformer\TransactionFileDataTransformer;
+use App\DTO\TransactionDTO;
+use App\Service\BinlistReader\BinlistReaderInterface;
+use App\Service\CommissionCalculator\Factory\CommissionCalculatorFactoryInterface;
+use App\Service\FileDataTransformer\FileDataTransformerInterface;
 use App\Service\FileReader\FileReaderInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -11,6 +14,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use \Throwable;
 
 
 #[AsCommand(
@@ -28,9 +32,11 @@ class CalculateTransactionsCommissionsCommand extends Command
     private string $filePath;
 
     public function __construct(
-        private readonly FileReaderInterface            $fileReader,
-        private readonly TransactionFileDataTransformer $transactionFileDataTransformer,
-        private readonly LoggerInterface                $logger
+        private readonly FileReaderInterface                    $fileReader,
+        private readonly FileDataTransformerInterface           $fileDataTransformer,
+        private readonly BinlistReaderInterface                 $binlistReader,
+        private readonly CommissionCalculatorFactoryInterface   $commissionCalculatorFactory,
+        private readonly LoggerInterface                        $logger
     ) {
         parent::__construct();
     }
@@ -71,21 +77,40 @@ class CalculateTransactionsCommissionsCommand extends Command
     {
         try {
             $this->calculateCommissions();
-        } catch (\Throwable $exception) {
-            //TODO: handle this correctly
-            $this->io->error($exception->getMessage());
-
-            $this->logger->critical('Command is failed', [
-                'exception' => $exception->getMessage(),
-                $exception
-            ]);
+        } catch (Throwable $exception) {
+            $this->handleException('Command is failed', $exception);
         }
     }
 
     private function calculateCommissions(): void
     {
-        foreach ($this->fileReader->readFile($this->filePath, $this->transactionFileDataTransformer) as $dto) {
-            $this->io->writeln("BIN: {$dto->bin}, Amount: {$dto->amount}, Currency: {$dto->currency}");
+        foreach ($this->fileReader->readFile($this->filePath, $this->fileDataTransformer) as $dto) {
+            try {
+                $this->calculateCommissionForTransaction($dto);
+            } catch (Throwable $exception) {
+                $this->handleException('Cant calculate commission for transaction', $exception);
+            }
         }
+    }
+
+    private function calculateCommissionForTransaction(TransactionDto $transactionDTO): void
+    {
+        $binlistDTO = $this->binlistReader->getData($transactionDTO->bin);
+
+        $commissionCalculator = $this->commissionCalculatorFactory->makeCalculator($binlistDTO->countryCodeAlpha2);
+
+        $commissionValue = $commissionCalculator->calculate($transactionDTO);
+
+        $this->io->write($commissionValue);
+        $this->io->newLine();
+    }
+
+    private function handleException(string $message, Throwable $exception): void
+    {
+        //TODO: handle this correctly
+
+        $this->logger->error($message, [
+            $exception
+        ]);
     }
 }
