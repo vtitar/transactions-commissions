@@ -34,14 +34,14 @@ class BinlistReader implements BinlistReaderInterface
         return $binlistDTO;
     }
 
-    private function getBinlistResponseArray(): array
+    protected function getBinlistResponseArray(): array
     {
         $cache = new FilesystemAdapter();
 
         $binCacheKey = $this->getBinCacheKey();
 
         $responseContent = $cache->get($binCacheKey, function (ItemInterface $item): string {
-            $item->expiresAfter(86400); // 24 hours
+            $item->expiresAfter($this->containerBag->get('binlist.api.cache-lifetime-seconds'));
 
             $dataFromBinlist = $this->getDataFromBilist();
 

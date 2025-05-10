@@ -55,20 +55,10 @@ class CalculateTransactionsCommissionsCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $this->io = $io;
 
-        $start = time();
-        $datetime = new \DateTime();
-        $formatedDateTime = $datetime->format('Y-m-d H:i:s');
-
-        $this->io->info("Started: $formatedDateTime");
-
         $this->filePath = $input->getArgument('filepath');
 
         $this->process();
 
-        $end = time();
-        $duration = $end - $start;
-
-        $io->success("Finished in $duration seconds");
 
         return Command::SUCCESS;
     }
