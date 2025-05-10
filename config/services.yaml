@@ -9,6 +9,10 @@ parameters:
     binlist.api.max-retries: 4
     binlist.api.retry-delay-seconds: 180
 
+    exchangerates.api.endpoint: 'http://api.exchangeratesapi.io/v1/latest'
+    exchangerates.api.access-key: '%env(EXCHANGERATES_API_ACCESSKEY)%'
+    exchangerates.api.cache-lifetime-seconds: 3600 # rates update every 1h with current plan
+
     region-zone.eu.countries-list:
         - 'AT'
         - 'BE'

@@ -3,23 +3,24 @@
 namespace App\Service\CommissionCalculator;
 
 use App\DTO\TransactionDTO;
+use App\Service\ExchangeRateReader\ExchangeRateReaderInterface;
 
 abstract class AbstractCommissionCalculator implements CommissionCalculatorInterface
 {
     const FEE = 0.0;
 
-    public function __construct(
+    private TransactionDTO $transactionDTO;
 
+    public function __construct(
+        private readonly ExchangeRateReaderInterface $exchangeRateReader,
     ) {
     }
 
     public function calculate(TransactionDTO $transactionDTO): float
     {
-        $exchangeRate = $this->getExchangeRate();
-        if ($exchangeRate == 0) {
-            throw new \Exception('Exchange rate cannot be zero');
-        }
+        $this->transactionDTO = $transactionDTO;
 
+        $exchangeRate = $this->getExchangeRate();
         $fee = $this->getFee();
 
         $commission = $transactionDTO->amount / $exchangeRate * $fee;
@@ -29,8 +30,7 @@ abstract class AbstractCommissionCalculator implements CommissionCalculatorInter
 
     public function getExchangeRate(): float
     {
-        //TODO: add real exchage rate
-        return 1.1;
+        return $this->exchangeRateReader->getExchangeRate($this->transactionDTO->currency);
     }
 
     protected function ceilToCents(float $value): float
