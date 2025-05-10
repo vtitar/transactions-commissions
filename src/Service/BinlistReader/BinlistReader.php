@@ -49,6 +49,7 @@ class BinlistReader implements BinlistReaderInterface
         });
 
         $responseArray = json_decode($responseContent, true);
+        $this->validateResponseData($responseArray);
 
         return $responseArray;
     }
@@ -87,6 +88,13 @@ class BinlistReader implements BinlistReaderInterface
         throw new \RuntimeException('Error fetching data for bin: ' . $this->bin);
     }
 
+    protected function validateResponseData(array $responseArray): void
+    {
+        if (!isset($responseArray['country']['alpha2'])) {
+            throw new \Exception('Binlist response does not contain country code');
+        }
+    }
+
     protected function getBinCacheKey(): string
     {
         return self::BINLIST_CACHE_KEY_PREFIX . $this->bin;
@@ -104,10 +112,10 @@ class BinlistReader implements BinlistReaderInterface
 
         $binlistDTO = new BinlistDTO(
             $this->bin,
-            (string) $data['type'],
-            (string) $data['brand'],
-            (string) $data['country']['alpha2'],
-            (string) $data['country']['currency'],
+            (string) $data['type'] ?? '',
+            (string) $data['brand'] ?? '',
+            (string) $data['country']['alpha2'] ?? '',
+            (string) $data['country']['currency'] ?? '',
         );
 
         return $binlistDTO;

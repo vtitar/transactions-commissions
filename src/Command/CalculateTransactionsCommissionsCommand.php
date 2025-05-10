@@ -110,7 +110,8 @@ class CalculateTransactionsCommissionsCommand extends Command
         //TODO: handle this correctly
 
         $this->logger->error($message, [
-            $exception
+            'exception_message' => $exception->getMessage(),
+            'exception' => $exception
         ]);
     }
 }
