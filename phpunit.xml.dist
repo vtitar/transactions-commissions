@@ -19,7 +19,8 @@
 
     <testsuites>
         <testsuite name="Project Test Suite">
-            <directory>tests</directory>
+            <directory>tests/TransactionsCommissions/MockServices</directory>
+<!--            <directory>tests/TransactionsCommissions/MockHttpClient</directory>-->
         </testsuite>
     </testsuites>
 

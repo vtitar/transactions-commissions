@@ -23,10 +23,7 @@ abstract class AbstractTester extends KernelTestCase
         $this->application = new Application();
         $this->container = static::getContainer();
 
-        //TODO: need to resolve issue with caching
-        sleep(2);
-
-        $this->mockHttpClient();
+        $this->mock();
 
         $command = $this->container->get(CalculateTransactionsCommissionsCommand::class);
         $this->application->add($command);
@@ -39,6 +36,11 @@ abstract class AbstractTester extends KernelTestCase
 
         $this->output = $commandTester->getDisplay();
 
+    }
+
+    protected function mock(): void
+    {
+        $this->mockHttpClient();
     }
 
     protected function mockHttpClient(): void

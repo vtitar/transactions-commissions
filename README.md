@@ -48,10 +48,19 @@ in output will be displayed calculated commissions.
 
 # 4. UnitTesting
 
-Added 3 unit tests:
+Created 2 separate scenarios for unit testings:
+ - mock httpClient - for better code coverage.
+ - mock api(readers) services - for testing app with possibility to change api providers.
+
+Added 4 unit tests:
+**Mock HttpClient**
  - success test
  - test with emty line response from binlist
  - throtlled 429 test
+ **Mock Services**
+ - success test
+
+Currently configured to run only Mock services scenario - as this is requested in task
 
 Tests could be started:
 
@@ -61,7 +70,7 @@ Tests could be started:
 
 # 5. Tests code coverage
 
-Generated code coverage. Currently 85%. Could be checked by running in browser coverage/index.html
+Generated code coverage(for HttpClientMock). Currently 85%. Could be checked by running in browser coverage/index.html
 
 # 6. Suggested Improvements 
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\TransactionsCommissions\Success;
+namespace App\Tests\TransactionsCommissions\MockHttpClient\Success;
 
 use App\Tests\TransactionsCommissions\AbstractTester;
 use Symfony\Component\HttpClient\Response\MockResponse;
@@ -10,6 +10,9 @@ class SuccessTest extends AbstractTester
 
     public function testSuccess()
     {
+        //TODO: need to resolve issue with caching
+        sleep(2);
+
         parent::execute();
 
         $this->assertStringContainsString($this->normilize($this->getExpectedOutput()), $this->normilize($this->output));
