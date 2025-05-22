@@ -5,6 +5,44 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
 
+    binlist.api.endpoint: 'https://lookup.binlist.net/'
+    binlist.api.max-retries: 4
+    binlist.api.retry-delay-seconds: 180
+    binlist.api.cache-lifetime-seconds: 86400
+
+    exchangerates.api.endpoint: 'http://api.exchangeratesapi.io/v1/latest'
+    exchangerates.api.access-key: '%env(EXCHANGERATES_API_ACCESSKEY)%'
+    exchangerates.api.cache-lifetime-seconds: 3600 # rates update every 1h with current plan
+
+    region-zone.eu.countries-list:
+        - 'AT'
+        - 'BE'
+        - 'BG'
+        - 'CY'
+        - 'CZ'
+        - 'DE'
+        - 'DK'
+        - 'EE'
+        - 'ES'
+        - 'FI'
+        - 'FR'
+        - 'GR'
+        - 'HR'
+        - 'HU'
+        - 'IE'
+        - 'IT'
+        - 'LT'
+        - 'LU'
+        - 'LV'
+        - 'MT'
+        - 'NL'
+        - 'PO'
+        - 'PT'
+        - 'RO'
+        - 'SE'
+        - 'SI'
+        - 'SK'
+
 services:
     # default configuration for services in *this* file
     _defaults:
